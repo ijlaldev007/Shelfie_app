@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({
   userAvatar,
   isPro = false,
   notifications = [],
-  totalBalance = 230.75,
+  totalBalance = 100000.75,
   approvedAmount = 90.84,
   pendingAmount = 140.45,
   onRewardsPress,
@@ -107,7 +107,8 @@ const Header: React.FC<HeaderProps> = ({
       <NotificationModal
         visible={isNotificationModalVisible}
         onClose={closeNotifications}
-        notifications={notifications}
+        onConfirm={() => { /* TODO: implement confirm handler */ }}
+        item={notifications && notifications.length > 0 ? notifications[0] : null}
       />
     </>
   );
