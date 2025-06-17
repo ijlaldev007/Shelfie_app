@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons"; // Or your preferred icon library
+import { fonts, typography } from "../constants/typography";
 
 // --- Component Props Interface ---
 interface DealsHeaderProps {
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     // The component will auto-size its height based on content
   },
   container: {
-    paddingBottom: 20, // Space at the bottom of the header
+    paddingBottom: 30, // Reduced space to allow natural overlap with cards
     paddingHorizontal: 20,
   },
   topRow: {
@@ -120,8 +121,8 @@ const styles = StyleSheet.create({
     marginBottom: 24, // Space between title row and categories
   },
   title: {
-    fontFamily: "Inter-Bold", // Assuming you have this font
-    fontWeight: "700",
+    fontFamily: "Inter-Medium", // Assuming you have this font
+    
     fontSize: 32,
     color: "#FFFFFF",
   },

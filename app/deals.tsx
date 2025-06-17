@@ -1,2 +1,6 @@
+import React from 'react';
 import DealsScreen from '../screens/DealsScreen';
-export default DealsScreen;
+
+export default function DealsPage() {
+  return <DealsScreen />;
+}

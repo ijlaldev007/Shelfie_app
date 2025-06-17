@@ -1,8 +1,8 @@
 {
   "expo": {
-    "scheme": "shelfieapp",
-    "name": "Shelfie_app",
-    "slug": "Shelfie_app",
+    "scheme": "soleback",
+    "name": "Soleback",
+    "slug": "soleback-mobile-2025",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.ijlaldev007.soleback"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,6 +30,12 @@
     "plugins": [
       "expo-router",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e8507acd-9a97-4a90-82cd-1ba50a302ad8"
+      }
+    }
   }
 }

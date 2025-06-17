@@ -6,36 +6,21 @@ import {
   Image,
   TouchableOpacity,
   ImageSourcePropType,
+  StyleProp,
+  ViewStyle,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-// --- Define the shape of the different offer types ---
-// This is a discriminated union. The 'type' property tells us which kind of offer it is.
+import { Offer, Banner } from '../types/deals';
 
-// For offers with a new price and an original price
-type PriceOffer = {
-  type: "price";
-  newPrice: number;
-  originalPrice: number;
-};
-
-// For offers with a percentage discount
-type DiscountOffer = {
-  type: "discount";
-  percentage: number;
-};
-
-// The component will accept one of these two offer types
-export type Offer = PriceOffer | DiscountOffer;
-
-// --- Component Props Interface ---
 interface DealCardProps {
   imageUrl: ImageSourcePropType;
   category: string;
   title: string;
-  offer: Offer; // The offer prop must be one of the types defined above
-  isTrending?: boolean; // Optional prop for the "Trending Now" banner
+  offer: Offer;
+  banner?: Banner;
   onPress: () => void;
+  style?: StyleProp<ViewStyle>;
 }
 
 const DealCard: React.FC<DealCardProps> = ({
@@ -43,57 +28,58 @@ const DealCard: React.FC<DealCardProps> = ({
   category,
   title,
   offer,
-  isTrending = false,
+  banner,
   onPress,
+  style,
 }) => {
-  // --- Helper function to render the correct offer type ---
   const renderOffer = () => {
-    if (offer.type === "price") {
-      return (
-        <View style={styles.offerContainer}>
-          <Text style={styles.newPrice}>${offer.newPrice}</Text>
-          <Text style={styles.originalPrice}>${offer.originalPrice}</Text>
-        </View>
-      );
+    switch (offer.type) {
+      case "price":
+        return (
+          <View style={styles.offerContainer}>
+            <Text style={styles.newPrice}>${offer.newPrice}</Text>
+            <Text style={styles.originalPrice}>${offer.originalPrice}</Text>
+          </View>
+        );
+      case "discount":
+        return (
+          <View style={styles.offerContainer}>
+            <Ionicons name="flash" size={20} color="#4A90E2" />
+            <Text style={styles.discountText}>{offer.percentage}% OFF</Text>
+          </View>
+        );
+      case "action":
+        return (
+          <View style={styles.offerContainer}>
+            <Text style={styles.actionText}>{offer.text}</Text>
+          </View>
+        );
+      default:
+        return null;
     }
-
-    if (offer.type === "discount") {
-      return (
-        <View style={styles.offerContainer}>
-          <Ionicons name="flash" size={20} color="#4A90E2" />
-          <Text style={styles.discountText}>{offer.percentage}% OFF</Text>
-        </View>
-      );
-    }
-
-    return null; // Should not happen with correct props
   };
 
   return (
     <TouchableOpacity
-      style={styles.cardContainer}
+      style={[styles.cardContainer, style]} // Apply dynamic styles here
       onPress={onPress}
       activeOpacity={0.8}
     >
-      {/* --- Image Section --- */}
       <View style={styles.imageWrapper}>
         <Image source={imageUrl} style={styles.image} />
-        {isTrending && (
-          <View style={styles.trendingBanner}>
-            <Ionicons name="flame" size={16} color="#FFFFFF" />
-            <Text style={styles.trendingText}>Trending Now</Text>
+        {banner && (
+          <View style={[styles.banner, { backgroundColor: banner.color }]}>
+            <Ionicons name={banner.icon} size={16} color="#FFFFFF" />
+            <Text style={styles.bannerText}>{banner.text}</Text>
           </View>
         )}
       </View>
 
-      {/* --- Content Section --- */}
       <View style={styles.contentContainer}>
         <Text style={styles.categoryText}>{category}</Text>
         <Text style={styles.titleText} numberOfLines={2}>
           {title}
         </Text>
-
-        {/* --- Bottom Row: Offer and Arrow Button --- */}
         <View style={styles.bottomRow}>
           {renderOffer()}
           <View style={styles.arrowButton}>
@@ -108,55 +94,57 @@ const DealCard: React.FC<DealCardProps> = ({
 const styles = StyleSheet.create({
   cardContainer: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    borderRadius: 8,
     overflow: "hidden",
-    width: 250, // Or adjust as needed
-    margin: 10,
+    marginBottom: 12, // Space between rows
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    borderWidth: 1, // --- ADDED ---
+    borderColor: "#F1F0F3", // --- ADDED ---
   },
   imageWrapper: {
     position: "relative",
+    padding: 8, // --- ADDED --- (for top, left, right padding)
+    paddingBottom: 0, // --- ADDED --- (image is flush with content below)
+    
   },
   image: {
     width: "100%",
-    height: 150,
+    height: 100, // Adjusted height for grid layout
     backgroundColor: "#F0F0F0",
+    borderRadius: 4, // Match card border radius
   },
-  trendingBanner: {
+  banner: {
     position: "absolute",
-    top: 12,
-    left: 12,
+    top: 25,
+    left: 0,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#4A90E2", // Blue color for the banner
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 8,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderRadius: 8 ,
   },
-  trendingText: {
+  bannerText: {
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 12,
     marginLeft: 6,
   },
-  contentContainer: {
-    padding: 16,
-  },
+  contentContainer: { padding: 12 },
   categoryText: {
     color: "#6C6C6C",
-    fontSize: 12,
+    fontSize: 11,
     marginBottom: 4,
   },
   titleText: {
     color: "#1C1C1E",
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 16,
-    minHeight: 44, // Ensures consistent height for 1 or 2 lines
+    marginBottom: 12,
+    minHeight: 34, // Ensures consistent height for 1 or 2 lines
   },
   bottomRow: {
     flexDirection: "row",
@@ -165,29 +153,35 @@ const styles = StyleSheet.create({
   },
   offerContainer: {
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center", // Use center for better alignment
+    flex: 1, // Allow offer to take available space
   },
   newPrice: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#1C1C1E",
     marginRight: 8,
   },
   originalPrice: {
-    fontSize: 16,
-    color: "#E53935", // Red color for strikethrough
+    fontSize: 14,
+    color: "#E53935",
     textDecorationLine: "line-through",
   },
   discountText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    color: "#4A90E2", // Blue color for discount text
+    color: "#4A90E2",
     marginLeft: 6,
   },
+  actionText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4A90E2",
+  },
   arrowButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: "#F0F0F0",
     justifyContent: "center",
     alignItems: "center",
